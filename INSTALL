@@ -1,0 +1,18 @@
+sudo apt update
+sudo apt install git python3 cmake build-essential default-jre -y
+
+# Clone the repository
+git clone https://github.com/emscripten-core/emsdk.git
+
+# Enter the directory
+cd emsdk
+
+# Fetch the latest version of the tools
+./emsdk install latest
+
+# Make the "latest" SDK active for the current user
+./emsdk activate latest
+
+source ./emsdk_env.sh
+
+echo "source ~/emsdk/emsdk_env.sh" >> ~/.bashrc

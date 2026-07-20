@@ -1,0 +1,157 @@
+#paletteContainer {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px;
+    height: auto;
+    justify-content: flex-start;
+    max-width: 400px; /* Adjust width to fit roughly 16 swatches per line */
+}
+
+#snes-container #paletteContainer {
+    max-width: 380px; /* Adjust width to fit roughly 16 swatches per line */
+}
+
+/* Custom tweaks to keep the emulator layout sharp */
+.game-canvas-wrapper {
+    line-height: 0;
+}
+
+#gameCanvas {
+    background-color: #000;
+    display: block;
+    height: 480px;
+    width: 512px;
+    image-rendering: pixelated;
+    border: 4px solid #343a40;
+    border-radius: 6px;
+
+}
+
+.audio-resume-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 1rem;
+    background: transparent;
+    pointer-events: none;
+    z-index: 10;
+    border-radius: 6px;
+}
+
+.audio-resume-overlay__label {
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.5rem 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-radius: 0.5rem;
+    background: rgba(13, 110, 253, 0.85);
+    pointer-events: auto;
+    cursor: pointer;
+}
+.nav-tabs .nav-link.active {
+    font-weight: bold;
+}
+
+canvas.pixelated {
+    /* Force the browser to use a Nearest-Neighbor crisp scaling algorithm */
+    image-rendering: -moz-crisp-edges; /* Older Firefox versions */
+    image-rendering: pixelated;        /* Modern Chrome, Safari, Edge, Firefox */
+}
+
+#chrViewerCanvas {
+    /* Prevent the scrollable card-body from hijacking drag-to-pan gestures */
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
+}
+
+body.canvas-fullscreen {
+    overflow: hidden;
+    padding: 0 !important;
+    background-color: #000;
+}
+
+body.canvas-fullscreen > .container-fluid {
+    padding: 0 !important;
+    max-width: 100%;
+    height: 100vh;
+    margin: 0;
+}
+
+body.canvas-fullscreen nav,
+body.canvas-fullscreen .row > .col-12.col-lg-6:last-child {
+    display: none !important;
+}
+
+body.canvas-fullscreen .row {
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    --bs-gutter-x: 0;
+    --bs-gutter-y: 0;
+}
+
+body.canvas-fullscreen .row > .col-12.col-lg-6:first-child {
+    flex: 0 0 100%;
+    max-width: 100%;
+    height: 100%;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+body.canvas-fullscreen .row > .col-12.col-lg-6:first-child > .d-inline-block {
+    margin: 0 !important;
+}
+
+body.canvas-fullscreen #gameCanvas {
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    margin: 0 !important;
+}
+
+body.rom-drop-active::after {
+    content: 'Drop ROM file to load';
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(13, 110, 253, 0.15);
+    border: 3px dashed var(--bs-info);
+    pointer-events: none;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--bs-info);
+}
+
+#gameGrid.rom-drop-active {
+    position: relative;
+    outline: 3px dashed var(--bs-info);
+    outline-offset: 4px;
+    background: rgba(13, 110, 253, 0.08);
+    border-radius: 0.375rem;
+}
+
+#gameGrid.rom-drop-active::before {
+    content: 'Drop ROM files to import';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    background: rgba(0, 0, 0, 0.45);
+    font-weight: 600;
+    color: var(--bs-info);
+    pointer-events: none;
+    border-radius: 0.375rem;
+}

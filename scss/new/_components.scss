@@ -1,0 +1,387 @@
+// Retro Game Emulator Components
+
+@use 'variables' as *;
+
+// Compact Form Controls
+.form-control-retro,
+.form-select-retro {
+  background-color: $bg-input;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  color: $text-main;
+  font-family: $font-mono;
+  font-size: 0.75rem;
+  padding: 3px 6px;
+  height: 24px;
+  transition: all 0.15s ease-in-out;
+  color-scheme: dark;
+
+  &:focus {
+    background-color: #000;
+    border-color: $accent-secondary;
+    box-shadow: 0 0 6px rgba($accent-secondary, 0.3);
+    outline: none;
+    color: #fff;
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+  }
+
+  &:disabled {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.03);
+  }
+
+  option,
+  optgroup {
+    background-color: $bg-dark;
+    color: $text-main;
+  }
+}
+
+.form-select-retro {
+  padding-right: 20px;
+  background-color: $bg-input;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath d='M0 2l4 4 4-4z' fill='%239ca3af'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 8px 8px;
+  appearance: none;
+}
+
+// Compact Labels
+.label-retro {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin-bottom: 2px;
+  display: block;
+  font-family: $font-ui;
+  letter-spacing: 0.5px;
+}
+
+.text-xxs {
+  font-size: 0.65rem !important;
+}
+
+// Compact Buttons
+.btn-retro {
+  font-family: $font-ui;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  height: 24px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+
+  i {
+    font-size: 0.8rem;
+  }
+
+  &.btn-retro-primary {
+    background-color: rgba($accent-primary, 0.15);
+    border-color: rgba($accent-primary, 0.4);
+    color: #fff;
+
+    &:hover {
+      background-color: rgba($accent-primary, 0.3);
+      border-color: $accent-primary;
+      box-shadow: 0 0 8px rgba($accent-primary, 0.35);
+    }
+  }
+
+  &.btn-retro-secondary {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: $border-color;
+    color: rgba(255, 255, 255, 0.8);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color: $border-color-hover;
+      color: #fff;
+    }
+  }
+
+  &.btn-retro-cyan {
+    background-color: rgba($accent-secondary, 0.1);
+    border-color: rgba($accent-secondary, 0.35);
+    color: #fff;
+
+    &:hover {
+      background-color: rgba($accent-secondary, 0.22);
+      border-color: $accent-secondary;
+      box-shadow: 0 0 8px rgba($accent-secondary, 0.3);
+    }
+  }
+
+  &.btn-retro-success {
+    background-color: rgba($accent-success, 0.08);
+    border-color: rgba($accent-success, 0.35);
+    color: #fff;
+
+    &:hover {
+      background-color: rgba($accent-success, 0.18);
+      border-color: $accent-success;
+      box-shadow: 0 0 8px rgba($accent-success, 0.3);
+    }
+  }
+
+  &.btn-retro-warning {
+    background-color: rgba($accent-warning, 0.1);
+    border-color: rgba($accent-warning, 0.35);
+    color: #fff;
+
+    &:hover {
+      background-color: rgba($accent-warning, 0.2);
+      border-color: $accent-warning;
+      box-shadow: 0 0 8px rgba($accent-warning, 0.3);
+    }
+  }
+
+  &.btn-retro-icon-only {
+    width: 24px;
+    min-width: 24px;
+    padding: 0;
+  }
+}
+
+// Panel Section (collapsible/aesthetic sidebar container)
+.panel-section {
+  border-bottom: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex-shrink: 0;
+  background-color: $bg-dark;
+  position: relative;
+  z-index: 1;
+
+  .panel-section-header {
+    padding: 7px 10px;
+    background-color: rgba($bg-darkest, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: $font-ui;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.72);
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+    cursor: pointer;
+
+    .header-title {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .chevron {
+      font-size: 0.65rem;
+      transition: transform 0.2s ease;
+    }
+  }
+
+  .panel-section-body {
+    padding: 10px 12px;
+  }
+
+  &.is-collapsed {
+    .panel-section-body {
+      display: none;
+    }
+
+    .chevron {
+      transform: rotate(-90deg);
+    }
+  }
+}
+
+// Sidebar Footer info
+.sidebar-footer {
+  margin-top: auto;
+  padding: 8px 12px;
+  border-top: 1px solid $border-color;
+  background-color: rgba($bg-darkest, 0.15);
+  font-family: $font-mono;
+  font-size: 0.65rem;
+  color: $text-muted;
+  flex-shrink: 0;
+}
+
+// Badges
+.badge-retro {
+  font-family: $font-mono;
+  font-size: 0.65rem;
+  background-color: $bg-light;
+  border: 1px solid $border-color;
+  color: $text-main;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+// Custom Switch Styling to fit dark/cyan aesthetic
+.form-check-input {
+  background-color: $bg-input;
+  border-color: $border-color;
+
+  &:checked {
+    background-color: $accent-secondary;
+    border-color: $accent-secondary;
+  }
+
+  &:focus {
+    box-shadow: 0 0 6px rgba($accent-secondary, 0.4);
+    border-color: $accent-secondary;
+  }
+}
+
+// ==========================================================================
+// TAS Tool-Assisted Speedrun Styles
+// ==========================================================================
+.tas-piano-roll-container {
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  background-color: $bg-darkest;
+  position: relative;
+}
+
+// Compact number fields in the TAS snapshot settings row
+#tasPanel {
+  .form-control-retro[type="number"] {
+    height: 22px;
+    font-size: 0.68rem;
+    padding: 2px 4px;
+  }
+}
+
+.tas-piano-roll-grid {
+  display: grid;
+  font-family: $font-mono;
+  font-size: 0.62rem;
+  text-align: center;
+  user-select: none;
+}
+
+.tas-piano-roll-header {
+  background-color: rgba($bg-light, 0.95);
+  color: $text-muted;
+  position: sticky;
+  top: 0;
+  font-weight: 700;
+  border-bottom: 1px solid $border-color;
+  padding: 4px 0;
+  z-index: 10;
+  text-transform: uppercase;
+}
+
+.tas-piano-roll-row {
+  display: contents;
+
+  &.is-current {
+    .tas-piano-roll-cell {
+      background-color: rgba($accent-secondary, 0.18) !important;
+      color: #fff;
+      font-weight: 700;
+      border-top: 1px solid rgba($accent-secondary, 0.4);
+      border-bottom: 1px solid rgba($accent-secondary, 0.4);
+    }
+  }
+
+  &.is-checkpoint {
+    .tas-piano-roll-cell:first-child {
+      background-color: rgba($accent-warning, 0.25);
+      color: $accent-warning;
+      font-weight: 700;
+    }
+  }
+}
+
+.tas-piano-roll-cell {
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
+  border-right: 1px solid rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.tas-input-checkbox {
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  transition: all 0.1s ease-in-out;
+  background-color: rgba(0, 0, 0, 0.35);
+
+  &:hover {
+    border-color: rgba($accent-secondary, 0.6);
+  }
+
+  &:checked {
+    background-color: $accent-secondary;
+    border-color: $accent-secondary;
+    box-shadow: 0 0 4px rgba($accent-secondary, 0.5);
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #000;
+      top: 2px;
+      left: 2px;
+      border-radius: 1px;
+    }
+  }
+}
+
+.btn-retro-red {
+  background-color: rgba($accent-warning, 0.08);
+  border-color: rgba($accent-warning, 0.35);
+  color: #fff;
+
+  &:hover {
+    background-color: rgba($accent-warning, 0.22);
+    border-color: $accent-warning;
+    box-shadow: 0 0 8px rgba($accent-warning, 0.3);
+  }
+  
+  &.active {
+    background-color: rgba(220, 38, 38, 0.4);
+    border-color: rgb(239, 68, 68);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    animation: pulse-red 1.5s infinite;
+  }
+}
+
+@keyframes pulse-red {
+  0% { opacity: 1; }
+  50% { opacity: 0.62; }
+  100% { opacity: 1; }
+}
+

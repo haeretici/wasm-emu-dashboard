@@ -1,0 +1,8 @@
+tests/roms
+.vscode/
+roms
+src/md/sdl/genesis.wasm.map
+/nbproject/
+output/
+AGENTS.md
+tmp/

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Library</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="../../css/app.css" rel="stylesheet">
+    <style>
+        .game-card {
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+        }
+        .game-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.35);
+            border-color: var(--bs-info) !important;
+        }
+        .game-card.loading {
+            pointer-events: none;
+            opacity: 0.65;
+        }
+        .game-thumb {
+            aspect-ratio: 1 / 1;
+            background: linear-gradient(145deg, #1a1d21 0%, #0d0f12 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .game-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            image-rendering: pixelated;
+        }
+        .game-thumb-placeholder {
+            color: #495057;
+            font-size: 2.5rem;
+        }
+        .game-card-footer {
+            display: grid;
+            grid-template-columns: 2rem 1fr 2rem;
+            align-items: center;
+            gap: 0.25rem;
+            min-height: 2.5rem;
+        }
+        .game-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-word;
+            text-align: center;
+            cursor: pointer;
+            margin: 0;
+            line-height: 1.25;
+        }
+        .game-action-btn {
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bs-secondary);
+            text-decoration: none;
+        }
+        .game-action-btn:hover {
+            color: var(--bs-light);
+        }
+        .game-action-btn.remove-btn:hover {
+            color: var(--bs-danger);
+        }
+        .game-action-btn.edit-btn:hover {
+            color: var(--bs-info);
+        }
+        #searchInput.is-filtering {
+            border-color: var(--bs-info);
+        }
+    </style>
+</head>
+<body class="bg-dark text-light py-4">
+
+    <div class="container-fluid px-4">
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
+                    <div>
+                        <h4 class="mb-1 text-info" id="systemTitle">Game Library</h4>
+                        <p class="text-muted small mb-0">
+                            Browse ROMs saved for this system. Drop ROM files on the grid or click a game to load it in the emulator window.
+                        </p>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <div class="input-group input-group-sm" style="width: auto;">
+                            <label class="input-group-text bg-black bg-opacity-30 border-secondary text-secondary" for="systemSelect">System</label>
+                            <select id="systemSelect" class="form-select bg-dark text-light border-secondary" style="min-width: 180px;"></select>
+                        </div>
+                        <button id="btnRefresh" class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                        <button id="btnExportAll" class="btn btn-sm btn-outline-info">Export All</button>
+                        <button id="btnImportAll" class="btn btn-sm btn-outline-info">Import All</button>
+                        <input type="file" id="libraryImportInput" class="d-none" accept=".json,application/json">
+                    </div>
+                </div>
+                <div id="statusMessage" class="alert alert-secondary py-2 small mb-3">Loading…</div>
+                <p class="text-muted small my-3">Export All / Import All backs up ROMs, metadata, and screenshots across every console. Importing overwrites existing entries with matching keys. Save states and gamepad settings are not included.</p>
+            </div>
+
+            <div class="col-12">
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-black bg-opacity-30 border-secondary text-secondary">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="search"
+                           id="searchInput"
+                           class="form-control bg-dark text-light border-secondary"
+                           placeholder="Filter by name or title…"
+                           autocomplete="off">
+                    <button id="btnClearSearch" class="btn btn-outline-secondary" type="button" title="Clear filter">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div id="gameGrid" class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+                    <div class="col-12 text-center text-muted py-5">Loading library…</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit meta modal -->
+    <div class="modal fade" id="editMetaModal" tabindex="-1" aria-labelledby="editMetaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-info" id="editMetaModalLabel">Edit Game</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small text-secondary">ROM file</label>
+                        <input type="text" class="form-control form-control-sm bg-black bg-opacity-25 text-muted border-secondary" id="editMetaRomName" readonly>
+                    </div>
+                    <div class="mb-0">
+                        <label for="editMetaTitle" class="form-label small text-secondary">Title</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" id="editMetaTitle" placeholder="Display title (optional)" autocomplete="off">
+                        <div class="form-text text-muted">Leave empty to show the ROM file name.</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary" id="btnSaveMeta">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete confirmation modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-danger" id="deleteConfirmModalLabel">Remove Game</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2">Remove this game from the library?</p>
+                    <p class="mb-0 small text-muted" id="deleteConfirmGameName"></p>
+                    <p class="mb-0 small text-warning mt-2">The ROM, screenshot, and metadata will be deleted. Save states are not removed.</p>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-danger" id="btnConfirmDelete">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>const GlobalConfiguration = { systemId: 'nes' };</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+    <script src="../../js/shared/EmuHardwareMap.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="gameLibrary.js"></script>
+
+</body>
+</html>

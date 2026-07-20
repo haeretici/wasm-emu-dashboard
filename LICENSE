@@ -1,0 +1,55 @@
+WASM Emu Dashboard
+Copyright (c) 2026 Thiago Campos Viana
+
+The original frontend code (user interface, HTML pages, JavaScript logic, CSS styles,
+and HTML templates) created specifically for WASM Emu Dashboard is licensed under the
+MIT License (see below).
+
+================================================================================
+THIRD-PARTY COMPONENT LICENSES
+================================================================================
+This repository contains third-party emulator cores in the 'src/' directory
+which are compiled to WebAssembly. These cores are owned by their respective
+copyright holders and are subject to their own licensing terms, including
+strict NON-COMMERCIAL restrictions for SNES and Genesis/Mega Drive emulation:
+
+1. NES Core (Agnes):
+   - Location: src/nes/
+   - License: MIT License (Copyright (c) 2019 Krzysztof Gabis)
+   - Permissive, open-source.
+
+2. SNES Core (Snes9x):
+   - Location: src/snes9x/
+   - License: Snes9x License (Copyright 1996 - 2026 Snes9x Team) + GPL v2 (ZSNES/ndssfc code)
+   - Restriction: PERSONAL / NON-COMMERCIAL USE ONLY.
+
+3. Genesis / Mega Drive Core (Genesis Plus GX):
+   - Location: src/md/
+   - License: Custom Non-Commercial Copyleft License (Copyright Charles MacDonald, Eke-Eke)
+              + LGPL v2.1+ (Nuked OPN2, Blip Buffer, NTSC filter)
+   - Restriction: STRICTLY NON-COMMERCIAL USE. Redistributing modified source code
+                  requires full source disclosure of all linked components.
+
+Please refer to the LICENSE/copyright files within each respective subdirectory
+under 'src/' for their full licensing terms.
+
+================================================================================
+MIT LICENSE (Applied to WASM Emu Dashboard Frontend)
+================================================================================
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

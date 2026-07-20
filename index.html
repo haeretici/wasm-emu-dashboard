@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NES: WebAssembly Suite</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="build/new.css" rel="stylesheet">
+</head>
+<body id="nes-container">
+
+<div class="editor-app-container">
+
+    <!-- Top Menu / Header Bar -->
+    <header class="editor-header-bar">
+        <div class="brand">
+            <i class="fa-solid fa-gamepad"></i> ROM Dashboard
+        </div>
+
+        <div class="menu-items d-none d-md-flex">
+            <!-- Platform Selector Dropdown -->
+            <div class="dropdown">
+                <span class="menu-item dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="platformMenuLabel">
+                    Platform: NES
+                </span>
+                <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary border-opacity-25 text-xxs">
+                    <li>
+                        <a class="dropdown-item py-1" data-platform-link="nes" href="index.html?system=nes">NES</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item py-1" data-platform-link="snes" href="index.html?system=snes">SNES</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item py-1" data-platform-link="md" href="index.html?system=md">Sega</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sprite Editor Dropdown -->
+            <div class="dropdown">
+                <span class="menu-item dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Sprite Editor</span>
+                <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary border-opacity-25 text-xxs">
+                    <li><a class="dropdown-item py-1 open-sprite-editor window-opener" href="widgets/chr-viewer/">CHR ROM</a></li>
+                    <li><a class="dropdown-item py-1 open-sprite-editor window-opener" href="widgets/chr-viewer/?type=state">CHR State</a></li>
+                </ul>
+            </div>
+
+            <!-- Library/Gamepad Tools -->
+            <a class="menu-item window-opener text-decoration-none" data-widget-system="widgets/gamelibrary/" href="widgets/gamelibrary/?systemId=nes">Library</a>
+            <a class="menu-item window-opener text-decoration-none" data-widget-system="widgets/gamepad/" href="widgets/gamepad/?systemId=nes">Gamepad</a>
+            <a class="menu-item window-opener text-decoration-none" data-widget-system="widgets/cheats/" href="widgets/cheats/?systemId=nes">Cheats</a>
+
+            <!-- View Dropdown -->
+            <div class="dropdown">
+                <span class="menu-item dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">View</span>
+                <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary border-opacity-25 text-xxs">
+                    <li><a class="dropdown-item py-1 view-full-screen" href="#">Full Screen</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="global-actions">
+            <!-- Load ROM Form -->
+            <form class="d-flex align-items-center">
+                <label class="label-retro mb-0 me-2 text-xxs" style="white-space: nowrap;" for="romFileInput">Load ROM</label>
+                <input type="file" class="form-control form-control-retro" id="romFileInput" accept=".nes">
+            </form>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="editor-workspace">
+
+        <!-- Left: Settings Panel -->
+        <aside class="editor-sidebar-left">
+            <div class="panel-section" id="controlsPanel">
+                <div class="panel-section-header" data-panel-toggle="controlsPanel">
+                    <div class="header-title">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Configuration</span>
+                    </div>
+                    <div class="header-actions">
+                        <i class="fa-solid fa-chevron-down chevron"></i>
+                    </div>
+                </div>
+                <div class="panel-section-body">
+                    <span class="label-retro mb-2">State Controls</span>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <button id="btnPause" class="btn btn-retro btn-retro-cyan w-100" onclick="togglePause()">Pause</button>
+                        </div>
+                        <div class="col-6">
+                            <button id="btnReset" class="btn btn-retro btn-retro-warning w-100" onclick="resetEmulator()">Reset</button>
+                        </div>
+                        <div class="col-6">
+                            <button id="btnSave" class="btn btn-retro btn-retro-success w-100" onclick="saveState()">Save State</button>
+                        </div>
+                        <div class="col-6">
+                            <button id="btnLoad" class="btn btn-retro btn-retro-secondary w-100" onclick="loadState()" disabled>Load State</button>
+                        </div>
+                    </div>
+
+                    <span class="label-retro mb-2">Audio Controls</span>
+                    <div class="form-check form-switch mb-1">
+                        <input class="form-check-input" type="checkbox" role="switch" id="settingAudioEnabled" checked>
+                        <label class="form-check-label label-retro text-light mb-0" style="cursor: pointer;" for="settingAudioEnabled">Enable audio</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section" id="libraryPanel">
+                <div class="panel-section-header" data-panel-toggle="libraryPanel">
+                    <div class="header-title">
+                        <i class="fa-solid fa-database"></i>
+                        <span>Save Data</span>
+                    </div>
+                    <div class="header-actions">
+                        <i class="fa-solid fa-chevron-down chevron"></i>
+                    </div>
+                </div>
+                <div class="panel-section-body">
+                    <span class="label-retro mb-2">IndexedDB Management</span>
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <button id="btnExportIDB" class="btn btn-retro btn-retro-secondary w-100 text-xxs" onclick="downloadIndexedDBExport()">Export Save States</button>
+                        </div>
+                        <div class="col-12">
+                            <label class="btn btn-retro btn-retro-secondary w-100 mb-0 text-xxs" for="idbImportInput">Import Save States</label>
+                            <input type="file" id="idbImportInput" class="d-none" accept=".json,application/json" onchange="handleIndexedDBImport(event)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <span>Planned additions: speed controls and custom macro mapping.</span>
+            </div>
+        </aside>
+
+        <!-- Center: Emulator Canvas Workspace -->
+        <main class="editor-center-panel">
+            <section class="canvas-workspace">
+                <div class="canvas-toolbar">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="label-retro mb-0">Platform: <strong class="text-info" id="canvasPlatformLabel">NES</strong></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
+                        <button class="btn btn-retro btn-retro-secondary btn-retro-icon-only view-full-screen" title="Full Screen"><i class="fa-solid fa-expand"></i></button>
+                    </div>
+                </div>
+
+                <div class="canvas-container">
+                    <div class="canvas-wrapper">
+                        <canvas id="gameCanvas" class="pixelated" width="256" height="240"></canvas>
+                        <div id="canvasOverlay" class="canvas-overlay d-flex flex-column align-items-center justify-content-center">
+                            <i class="fa-solid fa-file-import"></i>
+                            <span>Open Library or Drag ROM</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Right: TAS / Debugger / CDL -->
+        <aside class="editor-sidebar-right">
+            <div class="panel-section" id="tasPanel">
+                <div class="panel-section-header" data-panel-toggle="tasPanel">
+                    <div class="header-title">
+                        <i class="fa-solid fa-clock-history"></i>
+                        <span>TAS Controller</span>
+                    </div>
+                    <div class="header-actions">
+                        <i class="fa-solid fa-chevron-down chevron"></i>
+                    </div>
+                </div>
+                <div class="panel-section-body">
+                    <div class="row g-2 mb-2">
+                        <div class="col-3">
+                            <button id="btnTasPlay" class="btn btn-retro btn-retro-cyan w-100" onclick="window.TASEngineUI.togglePlay()" title="Play/Pause movie, or pause/resume live REC overwrite (Space)" disabled>
+                                <i class="fa-solid fa-play"></i> Play
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button id="btnTasPlayStart" class="btn btn-retro btn-retro-cyan w-100" onclick="window.TASEngineUI.playFromStart()" title="Play from start (Home / Ctrl+Space)" disabled>
+                                <i class="fa-solid fa-backward-fast"></i> Start
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button id="btnTasRecord" class="btn btn-retro btn-retro-red w-100" onclick="window.TASEngineUI.toggleRecord()" title="Live record ~60fps (R). Scrub/« back, then Space to overwrite from that point." disabled>
+                                <i class="fa-solid fa-circle"></i> Rec
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button id="btnTasStep" class="btn btn-retro btn-retro-secondary w-100" onclick="window.TASEngineUI.stepFrame()" title="Frame advance (F). Pauses live REC for precision." disabled>
+                                <i class="fa-solid fa-forward-step"></i> Step
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-3">
+                            <button id="btnTasPrevCp" class="btn btn-retro btn-retro-secondary w-100 text-xxs" onclick="window.TASEngineUI.prevCheckpoint()" title="Previous savestate checkpoint ([ or ,). Stays paused; later CPs kept until you overwrite (Space/F)." disabled>
+                                <i class="fa-solid fa-backward-step"></i> « CP
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button id="btnTasNextCp" class="btn btn-retro btn-retro-secondary w-100 text-xxs" onclick="window.TASEngineUI.nextCheckpoint()" title="Next savestate checkpoint (] or .). Works after scrubbing back (until you overwrite)." disabled>
+                                » CP <i class="fa-solid fa-forward-step"></i>
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button id="btnTasImport" class="btn btn-retro btn-retro-secondary w-100 text-xxs" onclick="window.TASEngineUI.importClick()" disabled>
+                                <i class="fa-solid fa-file-import"></i> Import
+                            </button>
+                            <input type="file" id="tasImportFileInput" class="d-none" accept=".json,application/json" onchange="window.TASEngineUI.handleImport(event)">
+                        </div>
+                        <div class="col-3">
+                            <button id="btnTasExport" class="btn btn-retro btn-retro-secondary w-100 text-xxs" onclick="TASEngine.exportJSON()" disabled>
+                                <i class="fa-solid fa-file-export"></i> Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <span class="label-retro mb-1">Snapshot settings</span>
+                    <div class="row g-2 mb-1">
+                        <div class="col-6">
+                            <label class="text-xxs text-muted mb-0 d-block" for="tasCacheInterval">Interval (frames)</label>
+                            <input type="number" id="tasCacheInterval" class="form-control form-control-retro w-100" min="1" max="3600" value="60" step="1" title="Save a checkpoint every N frames (~60 = 1s at 60fps)" onchange="window.TASEngineUI.onSnapshotSettingsChange()">
+                        </div>
+                        <div class="col-6">
+                            <label class="text-xxs text-muted mb-0 d-block" for="tasMaxSnapshots">Max keep</label>
+                            <input type="number" id="tasMaxSnapshots" class="form-control form-control-retro w-100" min="1" max="500" value="80" step="1" title="Rotating pool of non-zero checkpoints. Frame 0 is always kept (total = max + 1)." onchange="window.TASEngineUI.onSnapshotSettingsChange()">
+                        </div>
+                    </div>
+                    <div class="text-xxs text-muted mb-2">Frame 0 is always kept (max keep + 1 total). Oldest non-zero rotates out.</div>
+
+                    <span class="label-retro mb-1 d-flex justify-content-between">
+                        <span>Timeline (checkpoints)</span>
+                        <span id="tasFrameDisplay" class="font-monospace text-xxs">Frame: 0 / 0</span>
+                    </span>
+                    <input type="range" class="form-range mb-1" id="tasFrameSlider" min="0" max="0" value="0" oninput="window.TASEngineUI.onSliderInput(event)" disabled>
+                    <div class="text-xxs text-muted mb-3">Slider snaps to savestates. Scrub back → stays paused → Space overwrites.</div>
+
+                    <div class="label-retro mb-1 d-flex justify-content-between align-items-center">
+                        <span>Piano Roll Editor</span>
+                        <button type="button" id="btnTasClear" class="btn btn-retro btn-retro-secondary text-xxs py-0 px-2" onclick="window.TASEngineUI.clearAll()" title="Clear piano roll input log and all TAS savestate checkpoints" disabled>
+                            <i class="fa-solid fa-trash"></i> Clear
+                        </button>
+                    </div>
+                    <div class="tas-piano-roll-container">
+                        <div id="tasPianoRollGrid" class="tas-piano-roll-grid">
+                            <!-- Populated dynamically via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section" id="debuggerPanel">
+                <div class="panel-section-header" data-panel-toggle="debuggerPanel">
+                    <div class="header-title">
+                        <i class="fa-solid fa-bug"></i>
+                        <span>Debugger / CDL</span>
+                    </div>
+                    <div class="header-actions">
+                        <i class="fa-solid fa-chevron-down chevron"></i>
+                    </div>
+                </div>
+                <div class="panel-section-body">
+                    <span class="label-retro mb-2">CDL Operations</span>
+                    <button class="btn btn-retro btn-retro-cyan w-100 mb-3" onclick="downloadCDL()">
+                        <i class="fa-solid fa-download me-1"></i> Export CDL File
+                    </button>
+
+                    <span class="label-retro mb-2">Raw Save State</span>
+                    <button class="btn btn-retro btn-retro-secondary w-100" onclick="downloadState()">
+                        <i class="fa-solid fa-download me-1"></i> Export Raw Save State
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Status Bar -->
+    <footer class="editor-statusbar">
+        <div class="status-item">
+            <i class="fa-solid fa-circle text-success" style="font-size: 0.45rem;" id="statusReadyDot"></i>
+            <span id="statusReady">Core Ready</span>
+        </div>
+        <div class="status-item">
+            <span>System: <strong class="text-info" id="statusSystemId">NES</strong></span>
+        </div>
+    </footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Resolve ?system= before shared app scripts (sets body id + UI) -->
+<script src="js/page-system.js"></script>
+<!-- Common app js -->
+<script src="js/globals.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/cheats-engine.js"></script>
+<script src="js/shared/EmuHardwareMap.js"></script>
+<script src="js/shared/systemButtons.js"></script>
+<script src="js/shared/input.js"></script>
+<script src="js/savestate.js"></script>
+<script src="js/cdl.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+<script src="js/tas.js"></script>
+<script src="js/shared/audioContext.js"></script>
+<script src="js/shared/emulatorRuntime.js"></script>
+<!-- System-specific core + app (blocking, same order as former index.php) -->
+<script>
+    PageSystem.writeCoreScripts();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+// Retro Game Emulator SCSS Variables
+
+$bg-darkest: #0d0f14; // Main application backdrop
+$bg-dark: #151821;    // Workspace panel backgrounds
+$bg-light: #1f2430;   // Selected state, tooltips, nested card background
+$bg-selected: #2b3242;// Active tool or active row background
+$bg-input: #0a0c10;    // Input fields backdrop
+$text-main: #f3f4f6;   // Main text color
+$text-muted: rgba(255, 255, 255, 0.55);
+
+// Borders
+$border-color: rgba(255, 255, 255, 0.08);
+$border-color-hover: rgba(255, 255, 255, 0.16);
+$border-color-active: #00f2fe;
+
+// Accents
+$accent-primary: #ff0077;   // Magenta
+$accent-secondary: #00f2fe; // Cyan
+$accent-success: #39ff14;   // Green
+$accent-warning: #ffb700;   // Gold
+$accent-danger: #dc3545;    // Red
+
+// Typography
+$font-ui: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+$font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+$font-title: 'Orbitron', sans-serif;
+
+// Layout
+$header-height: 38px;
+$statusbar-height: 24px;
+$sidebar-left-width: 260px;
+// Slightly wider: TAS piano roll + snapshot controls live on the right.
+$sidebar-right-width: 300px;
+$canvas-toolbar-height: 34px;
